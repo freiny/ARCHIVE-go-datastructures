@@ -1,31 +1,49 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 func main() {
-	root := &BinaryTree{value: 1}
-	root.insert(2)
-	root.insert(3)
-	root.left.insert(4)
-	root.left.insert(5)
-	root.right.insert(6)
-	root.right.insert(7)
 
-	testPrint(root)
-	testPrint(root.left, root.right)
-	// print(root.left.left, root.left.right)
-	// print(root.right.left, root.right.right)
-}
+	// Tree Format: parent.leftChild.rightChild
+	root := buildTree(`
+		8.5.4
+		5.9.7 4..11
+		7.1.12 11.3.
+		12.2.
+	`)
 
-func testPrint(t ...*BinaryTree) {
-	for _, each := range t {
-		fmt.Println(each.value, each.left.value, each.right.value)
-		fmt.Println("-----------------------------------")
-	}
+	root.traverseLevelOrder(print)
+	// OUTPUT:
+	// 8.5.4
+	// 5.9.7
+	// 4..11
+	// 9..
+	// 7.1.12
+	// 11.3.
+	// 1..
+	// 12.2.
+	// 3..
+	// 2..
+
 }
 
 func print(t *BinaryTree) {
-	fmt.Print(t.value)
+	if t != nil {
+		fmt.Print(t.value)
+	}
+	fmt.Print(".")
+	if t.left != nil {
+		fmt.Print(t.left.value)
+	}
+	fmt.Print(".")
+	if t.right != nil {
+		fmt.Print(t.right.value)
+	}
+	fmt.Print("\n")
 }
 
 // BinaryTree ...
@@ -42,6 +60,22 @@ func (t *BinaryTree) insert(value byte) {
 		t.right = &BinaryTree{value: value}
 	default:
 		t.left = &BinaryTree{value: value, left: t.left}
+	}
+}
+
+func (t *BinaryTree) insertLeft(value byte) {
+	if t.left == nil {
+		t.left = &BinaryTree{value: value}
+	} else {
+		t.left = &BinaryTree{value: value, left: t.left}
+	}
+}
+
+func (t *BinaryTree) insertRight(value byte) {
+	if t.right == nil {
+		t.right = &BinaryTree{value: value}
+	} else {
+		t.right = &BinaryTree{value: value, right: t.right}
 	}
 }
 
@@ -71,5 +105,67 @@ func (t *BinaryTree) traversePostOrder() {
 // Breadth-First
 func (t *BinaryTree) traverseLevelOrder(f func(*BinaryTree)) {
 	order := map[int][]*BinaryTree{}
-	fmt.Println(order)
+	order[0] = []*BinaryTree{}
+
+	var traverse func(bt *BinaryTree, level int, order map[int][]*BinaryTree)
+	traverse = func(bt *BinaryTree, level int, order map[int][]*BinaryTree) {
+		if bt == nil {
+			return
+		}
+		order[level] = append(order[level], bt)
+		traverse(bt.left, level+1, order)
+		traverse(bt.right, level+1, order)
+	}
+	traverse(t, 0, order)
+
+	for i := 0; order[i] != nil; i++ {
+		for _, node := range order[i] {
+			f(node)
+		}
+	}
+}
+
+func buildTree(s string) *BinaryTree {
+
+	linkMap := map[byte][2]byte{}
+	treeMap := map[byte]*BinaryTree{}
+
+	rows := strings.Split(strings.TrimSpace(s), "\n")
+	iRootKey, _ := strconv.Atoi(strings.Split(strings.TrimSpace(rows[0]), ".")[0])
+	rootKey := byte(iRootKey)
+	for _, row := range rows {
+		trees := strings.Split(row, " ")
+		toByte := func(s string) byte {
+			i, _ := strconv.Atoi(s)
+			return byte(i)
+		}
+
+		for _, tree := range trees {
+			t := strings.Split(strings.TrimSpace(tree), ".")
+			root := toByte(t[0])
+			left := toByte(t[1])
+			right := toByte(t[2])
+			linkMap[root] = [2]byte{left, right}
+
+			if root != 0 {
+				treeMap[root] = &BinaryTree{value: root}
+			}
+			if treeMap[left] == nil && left != 0 {
+				treeMap[left] = &BinaryTree{value: left}
+			}
+			if treeMap[right] == nil && right != 0 {
+				treeMap[right] = &BinaryTree{value: right}
+			}
+		}
+
+	}
+
+	for k, _ := range linkMap {
+		leftIndex := linkMap[k][0]
+		rightIndex := linkMap[k][1]
+		treeMap[k].left = treeMap[leftIndex]
+		treeMap[k].right = treeMap[rightIndex]
+	}
+
+	return treeMap[rootKey]
 }
