@@ -85,6 +85,7 @@ Zipper
 Doubly connected edge list
 Difference list
 Free list
+</pre>
 
 # Trees
 
