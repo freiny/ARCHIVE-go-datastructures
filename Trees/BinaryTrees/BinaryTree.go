@@ -12,11 +12,13 @@ func main() {
 	root := buildTree(`
 		8.5.4
 		5.9.7 4..11
-		7.1.12 11.3.
-		12.2.
+		9.. 7.1.12 11.3.
+		1.. 12.2. 3..
+		2..
 	`)
 
 	root.traverseLevelOrder(print)
+	fmt.Println()
 	// OUTPUT:
 	// 8.5.4
 	// 5.9.7
@@ -31,7 +33,11 @@ func main() {
 
 }
 
-func print(t *BinaryTree) {
+func print(t *BinaryTree, level int, levelChange bool) {
+	if levelChange {
+		fmt.Println()
+	}
+
 	if t != nil {
 		fmt.Print(t.value)
 	}
@@ -43,7 +49,7 @@ func print(t *BinaryTree) {
 	if t.right != nil {
 		fmt.Print(t.right.value)
 	}
-	fmt.Print("\n")
+	fmt.Print(" ")
 }
 
 // BinaryTree ...
@@ -103,7 +109,7 @@ func (t *BinaryTree) traversePostOrder() {
 }
 
 // Breadth-First
-func (t *BinaryTree) traverseLevelOrder(f func(*BinaryTree)) {
+func (t *BinaryTree) traverseLevelOrder(f func(*BinaryTree, int, bool)) {
 	order := map[int][]*BinaryTree{}
 	order[0] = []*BinaryTree{}
 
@@ -119,8 +125,10 @@ func (t *BinaryTree) traverseLevelOrder(f func(*BinaryTree)) {
 	traverse(t, 0, order)
 
 	for i := 0; order[i] != nil; i++ {
+		levelChange := true
 		for _, node := range order[i] {
-			f(node)
+			f(node, i, levelChange)
+			levelChange = false
 		}
 	}
 }
