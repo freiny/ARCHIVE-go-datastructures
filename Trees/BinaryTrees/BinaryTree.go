@@ -17,7 +17,7 @@ func main() {
 		2..
 	`)
 
-	root.levelOrder(printLevelOrder)
+	root.levelOrder(printAll, func() { fmt.Println() })
 	fmt.Print("\n\n")
 	// OUTPUT:
 	// 8.5.4
@@ -26,11 +26,21 @@ func main() {
 	// 1.. 12.2. 3..
 	// 2..
 
-	root.preOrder(print)
-	fmt.Print("\n\n")
-	// OUTPUT:
-	// 8 5 9 7 1 12 2 4 11 3
+	root.levelOrder(print)
+	fmt.Println()
+	// OUTPUT: 8 5 4 9 7 11 1 12 3 2
 
+	root.preOrder(print)
+	fmt.Println()
+	// OUTPUT: 8 5 9 7 1 12 2 4 11 3
+
+	root.inOrder(print)
+	fmt.Println()
+	// OUTPUT: 9 5 1 7 2 12 8 4 3 11
+
+	root.postOrder(print)
+	fmt.Println()
+	// OUTPUT: 9 1 2 12 7 5 3 11 4 8
 }
 
 func print(t *BinaryTree) {
@@ -39,14 +49,8 @@ func print(t *BinaryTree) {
 	}
 }
 
-func printLevelOrder(t *BinaryTree, level int, levelChange bool) {
-	if levelChange {
-		fmt.Println()
-	}
-
-	if t != nil {
-		fmt.Print(t.value)
-	}
+func printAll(t *BinaryTree) {
+	fmt.Print(t.value)
 	fmt.Print(".")
 	if t.left != nil {
 		fmt.Print(t.left.value)
@@ -94,37 +98,39 @@ func (t *BinaryTree) insertRight(value int) {
 func (t *BinaryTree) delete() {
 }
 
-// Tree Format: parent.leftChild.rightChild
-// 8.5.4
-// 5.9.7 4..11
-// 9.. 7.1.12 11.3.
-// 1.. 12.2. 3..
-// 2..
-//
-// PreOrder - 8 5 9 7 1 12 2 4 11 3
-// InOrder - 9 5 1 7 2 12 8 4 3 11
-// PostOrder - 9 1 2 12 7 5 3 11 4 8
-// LevelOrder - 8 5 4 9 7 11 1 12 3 2
-
 func (t *BinaryTree) preOrder(f func(*BinaryTree)) {
+	t.order(f, "pre")
+}
+
+func (t *BinaryTree) inOrder(f func(*BinaryTree)) {
+	t.order(f, "in")
+}
+
+func (t *BinaryTree) postOrder(f func(*BinaryTree)) {
+	t.order(f, "post")
+}
+
+func (t *BinaryTree) order(f func(*BinaryTree), orderType string) {
 	var traverse func(bt *BinaryTree)
 	traverse = func(bt *BinaryTree) {
 		if bt != nil {
-			f(bt)
+			if orderType == "pre" {
+				f(bt)
+			}
 			traverse(bt.left)
+			if orderType == "in" {
+				f(bt)
+			}
 			traverse(bt.right)
+			if orderType == "post" {
+				f(bt)
+			}
 		}
 	}
-
 	traverse(t)
 }
 
-func (t *BinaryTree) inOrder() {
-}
-func (t *BinaryTree) postOrder() {
-}
-
-func (t *BinaryTree) levelOrder(f func(*BinaryTree, int, bool)) {
+func (t *BinaryTree) levelOrder(f func(*BinaryTree), onLevelChange ...func()) {
 	order := map[int][]*BinaryTree{}
 	order[0] = []*BinaryTree{}
 
@@ -140,10 +146,11 @@ func (t *BinaryTree) levelOrder(f func(*BinaryTree, int, bool)) {
 	traverse(t, 0, order)
 
 	for i := 0; order[i] != nil; i++ {
-		levelChange := true
+		if len(onLevelChange) > 0 {
+			onLevelChange[0]()
+		}
 		for _, node := range order[i] {
-			f(node, i, levelChange)
-			levelChange = false
+			f(node)
 		}
 	}
 }
@@ -178,7 +185,7 @@ func buildTree(s string) *BinaryTree {
 
 	}
 
-	for k, _ := range linkMap {
+	for k := range linkMap {
 		leftIndex := linkMap[k][0]
 		rightIndex := linkMap[k][1]
 		treeMap[k].left = treeMap[leftIndex]
