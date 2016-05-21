@@ -17,23 +17,29 @@ func main() {
 		2..
 	`)
 
-	root.traverseLevelOrder(print)
-	fmt.Println()
+	root.levelOrder(printLevelOrder)
+	fmt.Print("\n\n")
 	// OUTPUT:
 	// 8.5.4
-	// 5.9.7
-	// 4..11
-	// 9..
-	// 7.1.12
-	// 11.3.
-	// 1..
-	// 12.2.
-	// 3..
+	// 5.9.7 4..11
+	// 9.. 7.1.12 11.3.
+	// 1.. 12.2. 3..
 	// 2..
+
+	root.preOrder(print)
+	fmt.Print("\n\n")
+	// OUTPUT:
+	// 8 5 9 7 1 12 2 4 11 3
 
 }
 
-func print(t *BinaryTree, level int, levelChange bool) {
+func print(t *BinaryTree) {
+	if t != nil {
+		fmt.Print(t.value, " ")
+	}
+}
+
+func printLevelOrder(t *BinaryTree, level int, levelChange bool) {
 	if levelChange {
 		fmt.Println()
 	}
@@ -54,11 +60,11 @@ func print(t *BinaryTree, level int, levelChange bool) {
 
 // BinaryTree ...
 type BinaryTree struct {
-	value       byte
+	value       int
 	left, right *BinaryTree
 }
 
-func (t *BinaryTree) insert(value byte) {
+func (t *BinaryTree) insert(value int) {
 	switch {
 	case t.left == nil:
 		t.left = &BinaryTree{value: value}
@@ -69,7 +75,7 @@ func (t *BinaryTree) insert(value byte) {
 	}
 }
 
-func (t *BinaryTree) insertLeft(value byte) {
+func (t *BinaryTree) insertLeft(value int) {
 	if t.left == nil {
 		t.left = &BinaryTree{value: value}
 	} else {
@@ -77,7 +83,7 @@ func (t *BinaryTree) insertLeft(value byte) {
 	}
 }
 
-func (t *BinaryTree) insertRight(value byte) {
+func (t *BinaryTree) insertRight(value int) {
 	if t.right == nil {
 		t.right = &BinaryTree{value: value}
 	} else {
@@ -95,21 +101,30 @@ func (t *BinaryTree) delete() {
 // 1.. 12.2. 3..
 // 2..
 //
-// PreOrder - 8, 5, 9, 7, 1, 12, 2, 4, 11, 3
-// InOrder - 9, 5, 1, 7, 2, 12, 8, 4, 3, 11
-// PostOrder - 9, 1, 2, 12, 7, 5, 3, 11, 4, 8
-// LevelOrder - 8, 5, 4, 9, 7, 11, 1, 12, 3, 2
+// PreOrder - 8 5 9 7 1 12 2 4 11 3
+// InOrder - 9 5 1 7 2 12 8 4 3 11
+// PostOrder - 9 1 2 12 7 5 3 11 4 8
+// LevelOrder - 8 5 4 9 7 11 1 12 3 2
 
-// Depth-First
-func (t *BinaryTree) traversePreOrder() {
-}
-func (t *BinaryTree) traverseInOrder() {
-}
-func (t *BinaryTree) traversePostOrder() {
+func (t *BinaryTree) preOrder(f func(*BinaryTree)) {
+	var traverse func(bt *BinaryTree)
+	traverse = func(bt *BinaryTree) {
+		if bt != nil {
+			f(bt)
+			traverse(bt.left)
+			traverse(bt.right)
+		}
+	}
+
+	traverse(t)
 }
 
-// Breadth-First
-func (t *BinaryTree) traverseLevelOrder(f func(*BinaryTree, int, bool)) {
+func (t *BinaryTree) inOrder() {
+}
+func (t *BinaryTree) postOrder() {
+}
+
+func (t *BinaryTree) levelOrder(f func(*BinaryTree, int, bool)) {
 	order := map[int][]*BinaryTree{}
 	order[0] = []*BinaryTree{}
 
@@ -135,25 +150,20 @@ func (t *BinaryTree) traverseLevelOrder(f func(*BinaryTree, int, bool)) {
 
 func buildTree(s string) *BinaryTree {
 
-	linkMap := map[byte][2]byte{}
-	treeMap := map[byte]*BinaryTree{}
+	linkMap := map[int][2]int{}
+	treeMap := map[int]*BinaryTree{}
 
 	rows := strings.Split(strings.TrimSpace(s), "\n")
-	iRootKey, _ := strconv.Atoi(strings.Split(strings.TrimSpace(rows[0]), ".")[0])
-	rootKey := byte(iRootKey)
+	rootKey, _ := strconv.Atoi(strings.Split(strings.TrimSpace(rows[0]), ".")[0])
 	for _, row := range rows {
 		trees := strings.Split(row, " ")
-		toByte := func(s string) byte {
-			i, _ := strconv.Atoi(s)
-			return byte(i)
-		}
 
 		for _, tree := range trees {
 			t := strings.Split(strings.TrimSpace(tree), ".")
-			root := toByte(t[0])
-			left := toByte(t[1])
-			right := toByte(t[2])
-			linkMap[root] = [2]byte{left, right}
+			root, _ := strconv.Atoi(t[0])
+			left, _ := strconv.Atoi(t[1])
+			right, _ := strconv.Atoi(t[2])
+			linkMap[root] = [2]int{left, right}
 
 			if root != 0 {
 				treeMap[root] = &BinaryTree{value: root}
