@@ -31,12 +31,12 @@ func TestAppend(t *testing.T) {
 	l.Append(1)
 	l.Append(2)
 	l.Append(3)
-	tests1 := []ftest.Test{
+	tests = []ftest.Test{
 		{0, l.Head().Value, 1},
 		{1, l.Head().Next().Value, 2},
 		{2, l.Tail().Value, 3},
 	}
-	ftest.Assert(t, "Append(1,2,3)", tests1)
+	ftest.Assert(t, "Append(1,2,3)", tests)
 }
 
 func TestInsertAfter(t *testing.T) {
@@ -56,4 +56,25 @@ func TestInsertAfter(t *testing.T) {
 	}
 	ftest.Assert(t, "InsertAfter(...1,3,4,5)", tests)
 
+}
+
+func TestTraverse(t *testing.T) {
+	l := linkedlist.New()
+	l.Append(3)
+	l.Append(5)
+	l.Append(7)
+
+	f := func(e *linkedlist.Element) {
+		var in interface{}
+		in = e.Value.(int) + 1
+		e.Value = in
+	}
+	l.Traverse(f)
+
+	tests := []ftest.Test{
+		{0, l.Head().Value, 4},
+		{1, l.Head().Next().Value, 6},
+		{2, l.Tail().Value, 8},
+	}
+	ftest.Assert(t, "Append(3,5,7)", tests)
 }
