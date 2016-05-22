@@ -40,8 +40,8 @@ func (l *List) Hey() {
 func (l *List) Init() *List {
 	l.root.next = &l.root
 	l.tail = &l.root
+	l.len = 0
 	return l
-
 }
 
 // Head returns first element in list
