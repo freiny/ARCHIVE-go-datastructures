@@ -9,6 +9,7 @@ func New() *List {
 type Element struct {
 	Value      interface{}
 	prev, next *Element
+	list       *List
 }
 
 // Prev returns previous element
@@ -56,6 +57,7 @@ func (l *List) insert(new *Element, e *Element) *Element {
 	new.next = e.next
 	new.prev = e
 	e.next = new
+	new.list = l
 	l.len++
 	return new
 }
@@ -73,4 +75,14 @@ func (l *List) Append(value interface{}) *Element {
 // Prepend prepends Element with "value" to the front of the list
 func (l *List) Prepend(value interface{}) *Element {
 	return l.insertValue(value, &l.root)
+}
+
+// InsertBefore inserts new element before e, then returns inserted element
+func (l *List) InsertBefore(value interface{}, e *Element) *Element {
+	return l.insertValue(value, e.Prev())
+}
+
+// InsertAfter inserts new element after e, then returns inserted element
+func (l *List) InsertAfter(value interface{}, e *Element) *Element {
+	return l.insertValue(value, e)
 }
