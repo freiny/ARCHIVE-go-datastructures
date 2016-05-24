@@ -117,3 +117,56 @@ func TestInsertAfter(t *testing.T) {
 	}
 	ftest.Assert(t, tests, func(s string) { t.Errorf(s) })
 }
+
+func TestTraverse(t *testing.T) {
+	arr := make([]interface{}, 0, 0)
+	f := func(e *dllist.Element) *dllist.Element {
+		arr = append(arr, e.Value)
+		return e
+	}
+
+	l := dllist.New()
+	l.Traverse(f)
+	tests := []ftest.Test{
+		{0, arr, make([]interface{}, 0, 0)},
+	}
+	ftest.AssertDeep(t, tests, func(s string) { t.Errorf(s) })
+
+	l.Init()
+	l.Append(1)
+	l.Append(2)
+	l.Append(3)
+	l.Append(4)
+	l.Append(5)
+	l.Traverse(f)
+	tests = []ftest.Test{
+		{0, l.Len(), 5},
+		{1, arr, []interface{}{1, 2, 3, 4, 5}},
+	}
+
+	ftest.AssertDeep(t, tests, func(s string) { t.Errorf(s) })
+}
+
+func TestDelete(t *testing.T) {
+	arr := make([]interface{}, 0, 0)
+	f := func(e *dllist.Element) *dllist.Element {
+		arr = append(arr, e.Value)
+		return e
+	}
+
+	l := dllist.New()
+	l.Append(1)
+	l.Append(2)
+	l.Append(3)
+	l.Append(4)
+	l.Append(5)
+	l.Delete(l.First().Next())
+	l.Delete(l.First().Next().Next())
+	l.Traverse(f)
+	tests := []ftest.Test{
+		{0, l.Len(), 3},
+		{1, arr, []interface{}{1, 3, 5}},
+	}
+
+	ftest.AssertDeep(t, tests, func(s string) { t.Errorf(s) })
+}

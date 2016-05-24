@@ -86,3 +86,17 @@ func (l *List) InsertBefore(value interface{}, e *Element) *Element {
 func (l *List) InsertAfter(value interface{}, e *Element) *Element {
 	return l.insertValue(value, e)
 }
+
+// Traverse interates over the list running a callback for each element
+func (l *List) Traverse(f func(*Element) *Element) {
+	for i := l.First(); i.Value != nil; i = i.Next() {
+		f(i)
+	}
+}
+
+// Delete deletes Element e
+func (l *List) Delete(e *Element) {
+	e.prev.next = e.next
+	e.next.prev = e.prev
+	l.len--
+}
