@@ -1,31 +1,31 @@
-package linkedlist_test
+package sllist_test
 
 import (
 	"testing"
 
-	"github.com/freiny/go-ds/list/linkedlist"
+	"github.com/freiny/go-ds/list/sllist"
 	"github.com/freiny/go-util/ftest"
 )
 
 func TestNew(t *testing.T) {
-	l := linkedlist.New()
+	l := sllist.New()
 
 	tests := []ftest.Test{
-		{0, l.Head(), (*linkedlist.Element)(nil)},
-		{1, l.Tail(), (*linkedlist.Element)(nil)},
+		{0, l.Head(), (*sllist.Element)(nil)},
+		{1, l.Tail(), (*sllist.Element)(nil)},
 	}
-	ftest.Assert(t, "New()", tests)
+	ftest.Assert(t, tests, func(s string) { t.Errorf(s) })
 
 }
 
 func TestAppend(t *testing.T) {
-	l := linkedlist.New()
+	l := sllist.New()
 	l.Append(1)
 	tests := []ftest.Test{
 		{0, l.Head().Value, 1},
 		{1, l.Tail().Value, 1},
 	}
-	ftest.Assert(t, "Append(1)", tests)
+	ftest.Assert(t, tests, func(s string) { t.Errorf(s) })
 
 	l.Init()
 	l.Append(1)
@@ -36,11 +36,11 @@ func TestAppend(t *testing.T) {
 		{1, l.Head().Next().Value, 2},
 		{2, l.Tail().Value, 3},
 	}
-	ftest.Assert(t, "Append(1,2,3)", tests)
+	ftest.Assert(t, tests, func(s string) { t.Errorf(s) })
 }
 
 func TestInsertAfter(t *testing.T) {
-	l := linkedlist.New()
+	l := sllist.New()
 
 	l.InsertAfter(1, nil)
 	l.InsertAfter(5, l.Tail())
@@ -54,17 +54,17 @@ func TestInsertAfter(t *testing.T) {
 		{2, l.Head().Next().Next().Value, 4},
 		{3, l.Tail().Value, 5},
 	}
-	ftest.Assert(t, "InsertAfter(...1,3,4,5)", tests)
+	ftest.Assert(t, tests, func(s string) { t.Errorf(s) })
 
 }
 
 func TestTraverse(t *testing.T) {
-	l := linkedlist.New()
+	l := sllist.New()
 	l.Append(3)
 	l.Append(5)
 	l.Append(7)
 
-	f := func(e *linkedlist.Element) {
+	f := func(e *sllist.Element) {
 		var in interface{}
 		in = e.Value.(int) + 1
 		e.Value = in
@@ -76,5 +76,5 @@ func TestTraverse(t *testing.T) {
 		{1, l.Head().Next().Value, 6},
 		{2, l.Tail().Value, 8},
 	}
-	ftest.Assert(t, "Append(3,5,7)", tests)
+	ftest.Assert(t, tests, func(s string) { t.Errorf(s) })
 }
