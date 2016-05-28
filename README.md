@@ -73,7 +73,7 @@ Variable-length array
 ## Lists
 
 <pre>
-Doubly linked list
+- Doubly linked list
 Array list
 - Linked list
 Self-organizing list
