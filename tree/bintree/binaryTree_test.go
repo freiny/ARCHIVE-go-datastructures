@@ -24,8 +24,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestInsertLeft(t *testing.T) {
-	bt := bintree.New()
-	bt.Value = 0
+	bt := bintree.New(0)
 	bt.InsertLeft(1)
 	tests := []ftest.Test{
 		{0, bt.Value, 0},
@@ -36,8 +35,7 @@ func TestInsertLeft(t *testing.T) {
 }
 
 func TestInsertRight(t *testing.T) {
-	bt := bintree.New()
-	bt.Value = 0
+	bt := bintree.New(0)
 	bt.InsertRight(1)
 	tests := []ftest.Test{
 		{0, bt.Value, 0},
