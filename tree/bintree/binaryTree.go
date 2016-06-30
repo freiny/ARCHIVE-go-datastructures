@@ -1,8 +1,8 @@
 package bintree
 
 // New creates and initializes a new binary tree
-func New() *Tree {
-	return new(Tree).Init()
+func New(value ...interface{}) *Tree {
+	return new(Tree).Init(value...)
 }
 
 // Tree is a binary tree
@@ -12,8 +12,12 @@ type Tree struct {
 }
 
 // Init initializes and clears tree
-func (t *Tree) Init() *Tree {
+func (t *Tree) Init(value ...interface{}) *Tree {
 	t.Value = nil
+	if len(value) != 0 {
+		t.Value = value[0]
+	}
+	// t.Value = nil
 	t.left = nil
 	t.right = nil
 	return t
