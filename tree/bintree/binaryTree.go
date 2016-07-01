@@ -1,29 +1,9 @@
 package bintree
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
-
-func Print(t *Tree) {
-	if t != nil {
-		fmt.Print(t.Value, " ")
-	}
-}
-
-func PrintAll(t *Tree) {
-	fmt.Print(t.Value)
-	fmt.Print(".")
-	if t.left != nil {
-		fmt.Print(t.left.Value)
-	}
-	fmt.Print(".")
-	if t.right != nil {
-		fmt.Print(t.right.Value)
-	}
-	fmt.Print(" ")
-}
 
 // New creates and initializes a new binary tree
 func New(value ...interface{}) *Tree {
